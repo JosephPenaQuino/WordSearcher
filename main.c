@@ -9,36 +9,43 @@
 
 int main(int argc, char const *argv[])
 {
-    char ch;
-    char file_name[] = "cpuinfo";
-    char label_name[] = "model name\t:";
 
-    FILE *fp;
+    SearchParameters information_list[4];
+    information_list[0].file="cpuinfo";
+    information_list[0].name="model name\t: ";
+//    TODO: Continue writing the information list
 
+    for (int i = 0; i < 1; ++i) {
+        print_information(information_list[i]);
+    }
+    return 0;
+}
+
+void print_information(SearchParameters info_to_search) {
     Automata automata;
+    insert_label(&automata, info_to_search.name, (uint8_t)strlen(info_to_search.name)-1);
 
-    insert_label(&automata, label_name, (uint8_t)sizeof(label_name)-1);
+    char current_char;
+    int current_char_position = 0;
+    FILE *p_file;
 
-    fp = fopen(file_name, "r");
-    if (fp == NULL) {
+    p_file = fopen(info_to_search.file, "r");
+
+    if (p_file == NULL) {
         perror("Error while opening the file.\n");
         exit(EXIT_FAILURE);
     }
 
-    int cnt = 0;
-    
-    while((ch = (char)fgetc(fp)) != EOF && automata.state != FINAL) {
-        refresh_state(&automata, ch, cnt);
-        cnt++;
+    while((current_char = (char)fgetc(p_file)) != EOF && automata.state != FINAL) {
+        refresh_state(&automata, current_char, current_char_position);
+        current_char_position++;
     }
 
-    while((ch = (char)fgetc(fp)) != EOF && ch != '\n')  {
-        printf("%c", ch);
-        cnt++;
+    while((current_char = (char)fgetc(p_file)) != EOF && current_char != '\n')  {
+        printf("%c", current_char);
     }
-    fclose(fp);
 
-    return 0;
+    fclose(p_file);
 }
 
 void insert_label(Automata *automata, char const label[], uint8_t length) {
