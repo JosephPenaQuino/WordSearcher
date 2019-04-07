@@ -11,18 +11,25 @@ int main(int argc, char const *argv[])
 {
 
     SearchParameters information_list[4];
-    information_list[0].file="cpuinfo";
+    information_list[0].file="/proc/cpuinfo";
     information_list[0].name="model name\t: ";
+    information_list[1].file="/proc/meminfo";
+    information_list[1].name="MemTotal:       ";
+    information_list[2].file="/proc/version";
+    information_list[2].name="Linux version ";
 //    TODO: Continue writing the information list
 
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 3; ++i) {
+        printf("%s", information_list[i].name);
         print_information(information_list[i]);
+
     }
     return 0;
 }
 
 void print_information(SearchParameters info_to_search) {
     Automata automata;
+
     insert_label(&automata, info_to_search.name, (uint8_t)strlen(info_to_search.name)-1);
 
     char current_char;
@@ -44,12 +51,17 @@ void print_information(SearchParameters info_to_search) {
     while((current_char = (char)fgetc(p_file)) != EOF && current_char != '\n')  {
         printf("%c", current_char);
     }
-
+    printf("\n");
     fclose(p_file);
 }
 
 void insert_label(Automata *automata, char const label[], uint8_t length) {
     int i;
+    automata->state = START;
+    automata->start_index_last_input = 0;
+    automata->current_index_on_MIDDLE = 0;
+    automata->end_index_last_input = 0;
+    automata->temp_start = 0;
     for (i = 0; i < length; i++)
     {
         automata->label_name[i] = label[i];
