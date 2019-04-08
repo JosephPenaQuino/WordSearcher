@@ -17,15 +17,22 @@ int main(int argc, char const *argv[])
     information_list[1].name="MemTotal:       ";
     information_list[2].file="/proc/version";
     information_list[2].name="Linux version ";
-//    TODO: Continue writing the information list
+    information_list[3].file="/proc/stat";
+    information_list[3].name="btime ";
 
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 4; ++i) {
         printf("%s", information_list[i].name);
         print_information(information_list[i]);
-
     }
+
+    last_login[10] = '\n';
+    char * ptr;
+    time_t curtime = (int)strtol(last_login, &ptr, 10);
+    printf("Last login= %s", ctime(&curtime));
+
     return 0;
 }
+
 
 void print_information(SearchParameters info_to_search) {
     Automata automata;
@@ -47,9 +54,11 @@ void print_information(SearchParameters info_to_search) {
         refresh_state(&automata, current_char, current_char_position);
         current_char_position++;
     }
-
+    int xd = 0;
     while((current_char = (char)fgetc(p_file)) != EOF && current_char != '\n')  {
         printf("%c", current_char);
+        last_login[xd] = current_char;
+        xd++;
     }
     printf("\n");
     fclose(p_file);
@@ -69,7 +78,8 @@ void insert_label(Automata *automata, char const label[], uint8_t length) {
     automata->label_length = length;
 }
 
-void refresh_state(Automata *automata, char input, int index) {
+void refresh_state(Automata *automata, char input, int index)
+{
     switch(automata->state)
     {
         case START:

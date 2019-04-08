@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 enum States {START, MIDDLE, FINAL};
 
@@ -26,5 +27,7 @@ typedef struct {
 void insert_label(Automata *automata, char const label[], uint8_t length);
 void refresh_state(Automata *automata, char input, int index);
 void print_information(SearchParameters info_to_search);
+
+char last_login[11];
 
 #endif //CLION_MAIN_H
